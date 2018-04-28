@@ -35,11 +35,22 @@ function shake1 (node, amplitudeX = 20, amplitudeY = 0, duration = 0.1, times = 
   node.runAction(seq);
 }
 
+function zoomOut0 (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
+  if (!node) return;
+  const restore = save(node, ['scale']);
+  node.scale = initScale;
+  const a1 = cc.scaleTo(scaleUpDuration, scaleUpTo, scaleUpTo);
+  const a2 = cc.scaleTo(bounceDuration, 1, 1);
+  const seq = cc.sequence(a1, a2, restore);
+  node.runAction(seq);
+}
+
 module.exports = {
   //low level apis
   saveProps: save,
   shake0: shake0,
   shake1: shake1,
+  zoomOut0,
 
   //exported apis
   shake: shake0,
@@ -48,5 +59,8 @@ module.exports = {
   },
   shakeV (node, ay, dur, times) {
     shake1.call(null, node, 0, ay, dur, times);
+  },
+  zoomOut (node, dur, isBounce) {
+    zoomOut0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
   }
 }

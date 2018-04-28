@@ -35,7 +35,7 @@ function shake1 (node, amplitudeX = 20, amplitudeY = 0, duration = 0.1, times = 
   node.runAction(seq);
 }
 
-function zoomOut0 (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
+function zoomIn0 (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
   if (!node) return;
   const restore = save(node, ['scale']);
   node.scale = initScale;
@@ -50,7 +50,7 @@ module.exports = {
   saveProps: save,
   shake0: shake0,
   shake1: shake1,
-  zoomOut0,
+  zoomIn0,
 
   //exported apis
   shake: shake0,
@@ -60,7 +60,7 @@ module.exports = {
   shakeV (node, ay, dur, times) {
     shake1.call(null, node, 0, ay, dur, times);
   },
-  zoomOut (node, dur, isBounce) {
-    zoomOut0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
+  zoomIn (node, dur, isBounce) {
+    zoomIn0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
   }
 }

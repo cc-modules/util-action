@@ -52,7 +52,7 @@ function zoomIn0 (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
   });
 }
 
-module.exports = {
+export default {
   //low level apis
   saveProps: save,
   shake0: shake0,

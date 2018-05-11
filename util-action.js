@@ -11,7 +11,7 @@ function save (node, props, cb) {
   });
 }
 
-function shake0(node, degree = 15, duration = 0.1, times = 2) {
+function wobble(node, degree = 15, duration = 0.1, times = 2) {
   return new Promise((resolve, reject) => {
     if (!node) return reject();
     const restore = save(node, ['y','anchorY', 'rotationX','rotationY'], resolve);
@@ -52,15 +52,27 @@ function zoomIn0 (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
   });
 }
 
+function fadeIn0 (node, dir, duration) {
+  return new Promise ((resolve, reject) => {
+    if (!node) return reject();
+    node.y += dir * node.height;
+    node.opacity = 0
+
+    const a1 = cc.fadeIn(duration);
+    const a2 = cc.moveBy(duration, 0, -dir * node.height);
+    const seq = cc.spawn(a1, a2);
+    node.runAction(seq);
+  });
+}
+
 export default {
   //low level apis
   saveProps: save,
-  shake0: shake0,
   shake1: shake1,
   zoomIn0,
 
   //exported apis
-  shake: shake0,
+  wobble: wobble,
   shakeH (node, ax, dur, times) {
     return shake1.call(null, node, ax, 0, dur, times);
   },
@@ -69,5 +81,11 @@ export default {
   },
   zoomIn (node, dur, isBounce) {
     return zoomIn0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
+  },
+  fadeInDown (node, duration) {
+    return fadeIn0(node, 1, duration);
+  },
+  fadeInUp (node, duration) {
+    return fadeIn0(node, -1, duration);
   }
 }

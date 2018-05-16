@@ -49,7 +49,7 @@ function shake1_ (node, amplitudeX = 20, amplitudeY = 0, duration = 0.1, times =
 const shake1 = promisify(shake1_, 'sequence');
 
 function zoomIn0_ (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) {
-  const restore = save(node, ['scale']);
+  const restore = save(node, ['scaleX', 'scaleY']);
   node.scale = initScale;
   const a1 = cc.scaleTo(scaleUpDuration, scaleUpTo, scaleUpTo);
   const a2 = cc.scaleTo(bounceDuration, 1, 1);

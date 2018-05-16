@@ -10,15 +10,18 @@ function save (node, props) {
   });
 }
 
-function promisify (actionFn, fnName) {
+function promisify (actionFn, fnName, infinite = false, cb = null) {
   return function () {
     const node = arguments[0];
+    const args = Array.from(arguments);
     var actionArray = actionFn.apply(null, arguments);
     return new Promise((resolve, reject) => {
       if (!node) return reject();
-      actionArray.push(cc.callFunc(resolve))
-      const seq = cc[fnName].apply(cc, actionArray);
-      node.runAction(seq);
+      // infinite action will not resolve
+      if (!infinite) actionArray.push(cc.callFunc(resolve));
+      if (cb) actionArray = cb(actionArray, args);
+      const act = cc[fnName].apply(cc, actionArray);
+      node.runAction(act);
     })
   }
 }
@@ -63,6 +66,28 @@ function fadeIn0_ (node, dir, duration) {
 }
 const fadeIn0 = promisify(fadeIn0_, 'spawn');
 
+function flashForever_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {
+  const acts = flash_(node, inDur, stayDur, outDur);
+  return [cc.sequence(acts)];
+}
+
+function flashSometimes_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur, times = 3) {
+  const acts = flash_(node, inDur, stayDur, outDur);
+  return [cc.repeat(cc.sequence(acts), times)]
+}
+
+function flash_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {
+  node.opacity = 0;
+  const a1 = cc.fadeOut(inDur);
+  const a2 = cc.delayTime(stayDur);
+  const a3 = cc.fadeIn(outDur);
+  const acts = [a1, a2, a3];
+  return acts;
+}
+
+const flashForever = promisify(flashForever_, 'repeatForever', true);
+const flashSometimes = promisify(flashSometimes_, 'sequence', false, (acts, args) => [acts, args[4]]);
+
 export default {
   //low level apis
   saveProps: save,
@@ -70,12 +95,20 @@ export default {
   zoomIn0,
   fadeIn0,
 
-  //return actions
+  //return actions or sequence
   shake1_,
   zoomIn0_,
   wobble_,
+  flash_,
   //high level apis, return promise
   wobble: promisify(wobble_, 'sequence'),
+  flash (node, times = -1, inDur = 0.5, stayDur = 0.5, outDur = 0.5) {
+    if (times > 0) {
+      return flashSometimes(node, inDur, stayDur, outDur, times);
+    } else {
+      return flashForever(node, inDur, stayDur, outDur);
+    }
+  },
   shakeH (node, ax = 20, dur = 0.2, times = 2) {
     return shake1.call(null, node, ax, 0, dur, times);
   },

@@ -13,7 +13,7 @@ function save (node, props) {
 function promisify (actionFn, fnName, infinite = false, cb = null) {
   return function () {
     const node = arguments[0];
-    const args = Array.from(arguments);
+    const args = Array.from ? Array.from(arguments) : Array.prototype.slice.call(arguments)
     var actionArray = actionFn.apply(null, arguments);
     return new Promise((resolve, reject) => {
       if (!node) return reject();

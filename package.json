@@ -5,7 +5,7 @@
   "main": "util-action.js",
   "repository": {
     "type": "git",
-    "url": "ssh://git@code.vipkid.com.cn:3590/lingobus-fe/games/library/util-action.git"
+    "url": "ssh://git@code.vipkid.com.cn:3590/edu/cc-game/infra/util-action.git"
   },
   "author": "wangweihua@vipkid.com.cn",
   "license": "ISC"

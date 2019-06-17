@@ -27,24 +27,23 @@ function promisify (actionFn, fnName, infinite = false, cb = null) {
 }
 
 function wobble_ (node, degree = 15, duration = 0.1, times = 2) {
-  const restore = save(node, ['y','anchorY', 'rotationX','rotationY']);
+  const restore = save(node, ['angle']);
   const a1 = cc.rotateTo(duration, degree, degree);
   const a2 = cc.rotateTo(duration, -degree, -degree);
 
-  const init = cc.callFunc(() => {
-    node.anchorY = -1;
-    node.y -= 1.5 * node.height;
-  });
-
-  return [init, cc.repeat(cc.sequence(a1, a2), times), restore]
+  return times === Infinity
+    ? [cc.repeatForever(cc.sequence(a1, a2))]
+    : [cc.repeat(cc.sequence(a1, a2), times), restore];
 }
 const wobble = promisify(wobble_, 'sequence');
 
 function shake1_ (node, amplitudeX = 20, amplitudeY = 0, duration = 0.1, times = 2) {
-  const restore = save(node, ['x']);
+  const restore = save(node, ['x', 'y']);
   const a1 = cc.moveBy(duration, +amplitudeX, +amplitudeY);
   const a2 = cc.moveBy(duration, -amplitudeX, -amplitudeY);
-  return [cc.repeat(cc.sequence(a1, a2), times), restore]
+  return times === Infinity
+    ? [cc.repeatForever(cc.sequence(a1, a2))]
+    : [cc.repeat(cc.sequence(a1, a2), times), restore];
 }
 const shake1 = promisify(shake1_, 'sequence');
 
@@ -73,7 +72,9 @@ function flashForever_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {
 
 function flashSometimes_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur, times = 3) {
   const acts = flash_(node, inDur, stayDur, outDur);
-  return [cc.repeat(cc.sequence(acts), times)]
+  return times === Infinity
+    ? [cc.repeatForever(cc.sequence(acts))]
+    : [cc.repeat(cc.sequence(acts), times)];
 }
 
 function flash_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {

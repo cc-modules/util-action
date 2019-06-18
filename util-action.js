@@ -89,6 +89,12 @@ function flash_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {
 const flashForever = promisify(flashForever_, 'repeatForever', true);
 const flashSometimes = promisify(flashSometimes_, 'sequence', false, (acts, args) => [acts, args[4]]);
 
+function moveTo_ (node, x, y, duration) {
+  return [cc.moveTo(duration, x, y)];
+}
+
+const moveTo = promisify(moveTo_, 'sequence');
+
 export default {
   //low level apis
   saveProps: save,
@@ -124,5 +130,12 @@ export default {
   },
   fadeInUp (node, duration = 0.5) {
     return fadeIn0(node, -1, duration);
-  }
+  },
+  moveTo (node, x, y, duration = 0.5) {
+    if (cc.js.isNumber(x.x) && cc.js.isNumber(x.y)) {
+      return moveTo(node, x.x, x.y, y);
+    } else if (cc.js.isNumber(x) && cc.js.isNumber(y)) {
+      return moveTo(node, x, y, duration);
+    }
+  },
 }

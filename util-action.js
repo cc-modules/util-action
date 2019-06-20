@@ -56,11 +56,11 @@ function zoomIn0_ (node, initScale, scaleUpDuration, scaleUpTo, bounceDuration) 
 }
 const zoomIn0 = promisify(zoomIn0_, 'sequence');
 
-function fadeIn0_ (node, dir, duration) {
-  node.y += dir * node.height;
+function fadeIn0_ (node, dir, duration, distance) {
+  node.y += dir * distance;
   node.opacity = 0
   const a1 = cc.fadeIn(duration);
-  const a2 = cc.moveBy(duration, 0, -dir * node.height);
+  const a2 = cc.moveBy(duration, 0, -dir * distance);
   return [a1, a2];
 }
 const fadeIn0 = promisify(fadeIn0_, 'spawn');
@@ -92,8 +92,12 @@ const flashSometimes = promisify(flashSometimes_, 'sequence', false, (acts, args
 function moveTo_ (node, x, y, duration) {
   return [cc.moveTo(duration, x, y)];
 }
+function moveBy_ (node, x, y, duration) {
+  return [cc.moveBy(duration, x, y)];
+}
 
 const moveTo = promisify(moveTo_, 'sequence');
+const moveBy = promisify(moveBy_, 'sequence');
 
 export default {
   //low level apis
@@ -107,6 +111,8 @@ export default {
   zoomIn0_,
   wobble_,
   flash_,
+  moveTo_,
+  moveBy_,
   //high level apis, return promise
   wobble: promisify(wobble_, 'sequence'),
   flash (node, times = -1, inDur = 0.5, stayDur = 0.5, outDur = 0.5) {
@@ -125,11 +131,14 @@ export default {
   zoomIn (node, dur = 0.5, isBounce = true) {
     return zoomIn0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
   },
+  fadeIn (node, duration = 0.5) {
+    return faddeIn0(node, 1, duration, 0);
+  },
   fadeInDown (node, duration = 0.5) {
-    return fadeIn0(node, 1, duration);
+    return fadeIn0(node, 1, duration, node.height);
   },
   fadeInUp (node, duration = 0.5) {
-    return fadeIn0(node, -1, duration);
+    return fadeIn0(node, -1, duration, node.height);
   },
   moveTo (node, x, y, duration = 0.5) {
     if (cc.js.isNumber(x.x) && cc.js.isNumber(x.y)) {
@@ -138,4 +147,18 @@ export default {
       return moveTo(node, x, y, duration);
     }
   },
+  moveBy (node, x, y, duration = 0.5) {
+    if (cc.js.isNumber(x.x) && cc.js.isNumber(x.y)) {
+      return moveBy(node, x.x, x.y, y);
+    } else if (cc.js.isNumber(x) && cc.js.isNumber(y)) {
+      return moveBy(node, x, y, duration);
+    }
+  },
+  $inject(node) {
+    Object.keys(this).forEach(key => {
+      if (key.match(/^\$|[0-9_]$/)) return;
+      node[key] = this[key].bind(node, node);
+    });
+    return node;
+  }
 }

@@ -132,7 +132,7 @@ export default {
     return zoomIn0(node, 0.5, 0.2, isBounce ? 1.2 : 1, 0.1);
   },
   fadeIn (node, duration = 0.5) {
-    return faddeIn0(node, 1, duration, 0);
+    return fadeIn0(node, 1, duration, 0);
   },
   fadeInDown (node, duration = 0.5) {
     return fadeIn0(node, 1, duration, node.height);
@@ -154,11 +154,12 @@ export default {
       return moveBy(node, x, y, duration);
     }
   },
-  $inject(node) {
-    Object.keys(this).forEach(key => {
-      if (key.match(/^\$|[0-9_]$/)) return;
-      node[key] = this[key].bind(node, node);
+  $inject(...nodes) {
+    nodes.forEach((node) => {
+      Object.keys(this).forEach(key => {
+        if (key.match(/^\$|[0-9_]$/)) return;
+        node[key] = this[key].bind(node, node);
+      });
     });
-    return node;
   }
 }

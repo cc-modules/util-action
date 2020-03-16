@@ -96,8 +96,13 @@ function moveBy_ (node, x, y, duration) {
   return [cc.moveBy(duration, x, y)];
 }
 
+function wait_(node, duration) {
+  return [cc.delayTime(duration)];
+}
+
 const moveTo = promisify(moveTo_, 'sequence');
 const moveBy = promisify(moveBy_, 'sequence');
+const wait = promisify(wait_, 'sequence');
 
 export default {
   //low level apis
@@ -113,6 +118,7 @@ export default {
   flash_,
   moveTo_,
   moveBy_,
+  wait_,
   //high level apis, return promise
   wobble: promisify(wobble_, 'sequence'),
   flash (node, times = -1, inDur = 0.5, stayDur = 0.5, outDur = 0.5) {
@@ -154,11 +160,22 @@ export default {
       return moveBy(node, x, y, duration);
     }
   },
-  $inject(...nodes) {
+  wait (node, duration = 0.5) {
+    return wait(node, duration);
+  },
+  $inject(nodes, prefix = '') {
+    if (!Array.isArray(nodes) && cc.Node.isNode(nodes)) {
+      nodes = [nodes];
+    }
     nodes.forEach((node) => {
       Object.keys(this).forEach(key => {
         if (key.match(/^\$|[0-9_]$/)) return;
-        node[key] = this[key].bind(node, node);
+        const newKey = `${prefix}${key}`;
+        if (typeof node[newKey] !== 'undefined') {
+          console.warn(`${newKye} already defined on node. Consider using $inject(..., prefix)`);
+        } else {
+          node[newKey] = this[key].bind(node, node);
+        }
       });
     });
   }

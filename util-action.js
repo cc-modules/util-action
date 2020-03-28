@@ -58,12 +58,20 @@ const zoomIn0 = promisify(zoomIn0_, 'sequence');
 
 function fadeIn0_ (node, dir, duration, distance) {
   node.y += dir * distance;
-  node.opacity = 0
   const a1 = cc.fadeIn(duration);
   const a2 = cc.moveBy(duration, 0, -dir * distance);
   return [a1, a2];
 }
 const fadeIn0 = promisify(fadeIn0_, 'spawn');
+
+function fadeOut0_ (node, dir, duration, distance) {
+  node.y += dir * distance;
+  const a1 = cc.fadeOut(duration);
+  const a2 = cc.moveBy(duration, 0, -dir * distance);
+  return [a1, a2];
+}
+
+const fadeOut0 = promisify(fadeOut0_, 'spawn');
 
 function flashForever_ (node, inDur = 0.5, stayDur = 0.5, outDur = inDur) {
   const acts = flash_(node, inDur, stayDur, outDur);
@@ -110,6 +118,7 @@ export default {
   shake1: shake1,
   zoomIn0,
   fadeIn0,
+  fadeOut0,
 
   //return actions or sequence
   shake1_,
@@ -139,6 +148,9 @@ export default {
   },
   fadeIn (node, duration = 0.5) {
     return fadeIn0(node, 1, duration, 0);
+  },
+  fadeOut (node, duration = 0.5) {
+    return fadeOut0(node, 1, duration, 0);
   },
   fadeInDown (node, duration = 0.5) {
     return fadeIn0(node, 1, duration, node.height);

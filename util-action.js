@@ -160,14 +160,14 @@ export default {
   },
   moveTo (node, x, y, duration = 0.5) {
     if (cc.js.isNumber(x.x) && cc.js.isNumber(x.y)) {
-      return moveTo(node, x.x, x.y, y);
+      return moveTo(node, x.x, x.y, typeof y === 'undefined' ? duration : y);
     } else if (cc.js.isNumber(x) && cc.js.isNumber(y)) {
       return moveTo(node, x, y, duration);
     }
   },
   moveBy (node, x, y, duration = 0.5) {
     if (cc.js.isNumber(x.x) && cc.js.isNumber(x.y)) {
-      return moveBy(node, x.x, x.y, y);
+      return moveBy(node, x.x, x.y, typeof y === 'undefined' ? duration : y);
     } else if (cc.js.isNumber(x) && cc.js.isNumber(y)) {
       return moveBy(node, x, y, duration);
     }

@@ -1,8 +1,5 @@
 {
   "name": "util-action",
-  "version": "1.0.3",
-  "description": "",
-  "main": "util-action.js",
-  "author": "wangweihua@vipkid.com.cn",
-  "license": "ISC"
+  "version": "1.0.4",
+  "description": "Action Utilities"
 }
